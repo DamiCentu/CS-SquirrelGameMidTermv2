@@ -21,11 +21,11 @@ public class NormalMovent : MonoBehaviour, IMoventOnSurface
 
     void IMoventOnSurface.Active()
     {
-        velocity = runningVelocity;  
+        velocity = runningVelocity;
     }
     void IMoventOnSurface.Move()
     {
-        rb.velocity = new Vector3(0, rb.velocity.y,0);
+        rb.velocity = new Vector3(0, rb.velocity.y, 0);
         Vector3 cameraForward = cameraTransform.TransformDirection(Vector3.forward);
         cameraForward.y = 0;
 
@@ -35,7 +35,7 @@ public class NormalMovent : MonoBehaviour, IMoventOnSurface
 
         _lastDirection = vel.normalized;
 
-        if (vel.magnitude > 1) vel= vel.normalized;
+        if (vel.magnitude > 1) vel = vel.normalized;
         currentVelocity = vel.magnitude;
 
 
@@ -52,13 +52,14 @@ public class NormalMovent : MonoBehaviour, IMoventOnSurface
 
         bool is_moving = ver != 0.0 || hor != 0.0;
 
-       // _animator.SetFloat("Speed", vel.magnitude);
+        // _animator.SetFloat("Speed", vel.magnitude);
 
         if (is_moving)
         {
             Vector3 asd = rotateDirection_normal.normalized * velocity * Time.deltaTime;
             asd.y = 0;
-           if (ShouldMove()) {
+            if (ShouldMove())
+            {
                 rb.MovePosition(asd + rb.position);
             }
 
@@ -66,29 +67,40 @@ public class NormalMovent : MonoBehaviour, IMoventOnSurface
 
     }
 
-    public void ShouldWalk(bool v) {
+    public void ShouldWalk(bool v)
+    {
 
-        if (v) {
+        if (v)
+        {
             velocity = walkVelocity;
             //print("Camino!");
         }
-        else {
+        else
+        {
             //print("corro");
             velocity = runningVelocity;
         }
     }
 
-    internal  void PreventGettingStuck()
+    internal void PreventGettingStuck()
     {
         RaycastHit info;
-        if(!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, playerTransform.forward, out info,0.3f, floorLayersMask))
-        {
-            rb.MovePosition( info.normal + rb.position);
-        }
-   /*     if (!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, playerTransform.forward, out info, 0.3f, wallLayersMask))
+        if (!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, playerTransform.forward, out info, 0.3f, floorLayersMask))
         {
             rb.MovePosition(info.normal + rb.position);
-        }*/
+        }
+        else if (!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, playerTransform.forward, out info, 0.3f, wallLayersMask))
+        {
+            rb.MovePosition(info.normal * 0.2f + rb.position);
+        }
+        else if (!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, playerTransform.right, out info, 0.3f, wallLayersMask))
+        {
+            rb.MovePosition(info.normal * 0.2f + rb.position);
+        }
+        else if (!PlayerBrain.instance.onGround && Physics.Raycast(playerCenter.position, -playerTransform.right, out info, 0.3f, wallLayersMask))
+        {
+            rb.MovePosition(info.normal * 0.2f + rb.position);
+        }
     }
 
     public bool ShouldMove()

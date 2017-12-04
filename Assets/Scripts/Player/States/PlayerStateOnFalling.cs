@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerStateOnFalling :MonoBehaviour ,IState {
+public class PlayerStateOnFalling : MonoBehaviour, IState
+{
     public FallingBehaviour _fall;
     public NormalMovent _normalMovent;
     public NoAction _noAction;
@@ -46,22 +47,25 @@ public class PlayerStateOnFalling :MonoBehaviour ,IState {
             return "Climb";
 
         }
-        if (MyInputManager.instance.GetKey("Jump")) {
+        if (MyInputManager.instance.GetKey("Jump"))
+        {
             if (_timer <= PlayerBrain.instance.timeToJumpAfterFall && PlayerBrain.instance.canJumoOnAir && MyInputManager.instance.GetKey("Jump"))
             {
                 PlayerBrain.instance.canJumoOnAir = false;
                 return "Jump";
             }
-            else if (PlayerBrain.instance.allowGlide && _timer >= minTimeToGlide) {
+            else if (PlayerBrain.instance.allowGlide && _timer >= minTimeToGlide)
+            {
                 return "Glide";
             }
-          /*  else if (PlayerBrain.instance.onGround)
-            {
-                return "Floor";
-            }*/
-           
+            /*  else if (PlayerBrain.instance.onGround)
+              {
+                  return "Floor";
+              }*/
+
         }
-        if (PlayerBrain.instance.onGround) {
+        if (PlayerBrain.instance.onGround)
+        {
             return "Floor";
         }
         if (PlayerBrain.instance.rollingArea)
@@ -84,7 +88,7 @@ public class PlayerStateOnFalling :MonoBehaviour ,IState {
         }
         _normalMovent.PreventGettingStuck();
         PlayerAnimator.instance.SetSpeed(_normalMovent.currentVelocity);
-    
+
     }
 
     void IState.setParam(object param)

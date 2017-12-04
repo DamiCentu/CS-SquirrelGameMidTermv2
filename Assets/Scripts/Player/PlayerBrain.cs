@@ -3,13 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStunable
+public class PlayerBrain : MonoBehaviour, IPositionPredictable, IDamagable, IStunable
 {
     private IMoventOnAir _onAirMovent;
     private IMoventOnSurface _onMoventSurface;
     private IActions _actions;
-    public bool onGround=false;
-    public static PlayerBrain instance ;
+    public bool onGround = false;
+    public static PlayerBrain instance;
     internal bool jumping;
     internal bool canJump;
     public float timeToJumpAfterFall;
@@ -20,7 +20,7 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
     internal CapsuleCollider _capsuleCollider;
     internal SphereCollider _capsuleSphere;
     public int life;
-    private Dictionary<String, int> amountBullets=new Dictionary<string, int>();
+    private Dictionary<String, int> amountBullets = new Dictionary<string, int>();
     private Vector3 _capsuleCenterNormalPosition = new Vector3(0f, 0.08f, 0.13f);
     private Vector3 _capsuleCenterStandUpPosition = new Vector3(0f, 0.16f, 0.07f);
 
@@ -35,11 +35,11 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
     private float _timer;
     private float timeToFall = 0.1f;
 
-    internal bool allowGlide=false;
+    internal bool allowGlide = false;
     private bool isDead = false;
     private bool stayOnTheGround;
-    internal bool finishGame=false;
-    public int maxLife=100;
+    internal bool finishGame = false;
+    public int maxLife = 100;
 
     internal PlayerBrain SetPosition(Vector3 vector3)
     {
@@ -49,11 +49,12 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
 
     internal PlayerBrain Setlife(int v)
     {
-        if (life>0) this.life = v;
+        if (life > 0) this.life = v;
         return this;
     }
 
-    public void SetDirtParticles(bool value) {
+    public void SetDirtParticles(bool value)
+    {
         dirt.gameObject.SetActive(value);
     }
 
@@ -61,16 +62,19 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
     {
         if (stayOnTheGround)
         {
-            if (Physics.Raycast(this.transform.position, Vector3.down, 0.1f)) {
+            if (Physics.Raycast(this.transform.position, Vector3.down, 0.1f))
+            {
                 onGround = true;
-         //       _timer = 0;
-           }
+                //       _timer = 0;
+            }
         }
-        else {
-            if (!Physics.Raycast(this.transform.position, Vector3.down, 0.1f)) {
-  //              if (_timer > timeToFall)
-                   onGround = false;
-//                    _timer += Time.deltaTime;
+        else
+        {
+            if (!Physics.Raycast(this.transform.position, Vector3.down, 0.1f))
+            {
+                //              if (_timer > timeToFall)
+                onGround = false;
+                //                    _timer += Time.deltaTime;
             }
         }
     }
@@ -85,13 +89,13 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
     public void TakeDamage(int damage)
     {
         life -= damage;
-        
+
         if (life <= 0)
         {
             life = 0;
             Die();
         }
-        MyUiManager.instance.UpdateLife(  life/ (float)maxLife);
+        MyUiManager.instance.UpdateLife(life / (float)maxLife);
     }
 
     private void Die()
@@ -101,13 +105,15 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
         EventManager.instance.ExecuteEvent("PlayerDie");
     }
 
-    public void Awake() {
+    public void Awake()
+    {
         life = maxLife;
         if (instance == null)
         {
             instance = this;
         }
-        else {
+        else
+        {
             Destroy(this.gameObject);
         }
         rb = this.GetComponent<Rigidbody>();
@@ -116,7 +122,8 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
         _timer = timeToFall;
     }
 
-    void Start() {
+    void Start()
+    {
         EventManager.instance.SubscribeEvent("EnableGlide", EnableGlide);
         CheckPointManager checkpointManager = UnityEngine.Object.FindObjectOfType<CheckPointManager>();
         checkpointManager.CreateEvents();
@@ -138,8 +145,8 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
 
     internal void Roll()
     {
-        _capsuleCollider.enabled=false;
-        _capsuleSphere.enabled=true;
+        _capsuleCollider.enabled = false;
+        _capsuleSphere.enabled = true;
         rb.constraints = RigidbodyConstraints.None | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
 
     }
@@ -161,9 +168,10 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
         _actions.Active();
     }
 
-	// Update is called once per frame
-	void FixedUpdate () {
-        if (_onAirMovent!=null) _onAirMovent.Move();
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        if (_onAirMovent != null) _onAirMovent.Move();
         if (_onMoventSurface != null) _onMoventSurface.Move();
         if (_actions != null) _actions.Do();
 
@@ -183,12 +191,12 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
 
     private void OnCollisionStay(Collision collision)
     {
-        if (collision.gameObject.layer == 9 )
+        if (collision.gameObject.layer == 9)
         {
             stayOnTheGround = true;
 
-           // rb.useGravity = true;
-           // onGround = true;
+            // rb.useGravity = true;
+            // onGround = true;
         }
         else if (collision.gameObject.layer == 18) // RollingArea
         {
@@ -211,14 +219,14 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
 
     private void OnCollisionExit(Collision collision)
     {
-        if (collision.gameObject.layer == 9 ) 
+        if (collision.gameObject.layer == 9)
         {
-            stayOnTheGround = false; 
+            stayOnTheGround = false;
 
-    //        if (! Physics.Raycast(this.transform.position, Vector3.down, 0.1f))
-      //          onGround = false;
+            //        if (! Physics.Raycast(this.transform.position, Vector3.down, 0.1f))
+            //          onGround = false;
         }
-        else if (collision.gameObject.layer == 18 ) // RollingArea
+        else if (collision.gameObject.layer == 18) // RollingArea
         {
             rollingArea = false;
         }
@@ -239,12 +247,14 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
         }
     }
 
-    private void AddBullet(string bullet) {
+    private void AddBullet(string bullet)
+    {
         if (amountBullets.ContainsKey(bullet))
         {
             amountBullets[bullet] += 1;
         }
-        else {
+        else
+        {
             amountBullets[bullet] = 1;
         }
     }
@@ -275,7 +285,7 @@ public class PlayerBrain : MonoBehaviour, IPositionPredictable,IDamagable, IStun
     {
         if (!isDead)
         {
-            StateMachine.instance.ChangeStateIfNeeded("Stun",stunTime);
+            StateMachine.instance.ChangeStateIfNeeded("Stun", stunTime);
         }
     }
 }
